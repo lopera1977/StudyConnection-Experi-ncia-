@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+<title>StudyConnectApp · Plataforma de Integração</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%); min-height: 100vh; color: #1e293b; display: flex; flex-direction: column; }
+:root { --primary: #e67e22; --primary-dark: #d45a1a; --primary-light: #fef3e7; --gray-light: #f8fafc; --gray-border: #e2e8f0; --gray-text: #64748b; --danger: #dc3545; --success: #10b981; --warning: #f59e0b; --info: #3b82f6; --purple: #8b5cf6; }
+
+/* HEADER SUPER COMPACTO - SOMENTE ISSO FOI ALTERADO */
+.header { position: fixed; width: 100%; top: 0; z-index: 1000; background: rgba(255,255,255,0.98); backdrop-filter: blur(4px); box-shadow: 0 1px 8px rgba(0,0,0,0.05); }
+.top-menu { display: flex; justify-content: space-between; align-items: center; padding: 6px 20px; border-bottom: 1px solid var(--gray-border); flex-wrap: wrap; }
+.logo { font-size: 1.1rem; font-weight: 800; }
+.logo i { margin-right: 4px; }
+.top-menu-links { display: flex; gap: 16px; }
+.top-menu-links a { font-size: 0.75rem; color: #4a5568; text-decoration: none; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
+.top-menu-links a:hover { color: var(--primary); }
+
+.second-menu { display: flex; justify-content: center; gap: 32px; padding: 5px 12px; background: rgba(255,255,255,0.98); flex-wrap: wrap; }
+.second-menu a { font-size: 0.75rem; font-weight: 600; padding: 4px 16px; border-radius: 30px; color: #4a5568; text-decoration: none; cursor: pointer; transition: all 0.3s ease; }
+.second-menu a:hover { background: var(--primary-light); color: var(--primary); }
+
+/* Hero - margem ajustada para compensar menu menor */
+.hero { min-height: 100vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&h=900&fit=crop'); background-size: cover; background-position: center; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; margin-top: 62px; position: relative; }
+.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, rgba(230,126,34,0.2) 0%, transparent 70%); }
+.hero-content { padding: 20px; animation: fadeInUp 1s ease; position: relative; z-index: 1; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.hero h1 { font-size: 2rem; margin-bottom: 10px; color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.5); font-weight: 700; }
+.hero h1:first-of-type { font-size: 1.6rem; margin-bottom: 4px; }
+.hero h1:last-of-type { font-size: 1.2rem; margin-bottom: 20px; }
+.btn-primary { padding: 10px 32px; background: linear-gradient(135deg, var(--primary), #f39c12); border: none; border-radius: 50px; cursor: pointer; color: white; font-weight: 700; font-size: 0.9rem; transition: all 0.3s ease; box-shadow: 0 6px 16px rgba(230,126,34,0.3); }
+.btn-primary:hover { transform: translateY(-2px) scale(1.02); }
+
+/* Rodapé */
+.footer { background: #0f1a24; color: #94a3b8; text-align: center; padding: 16px; margin-top: auto; font-size: 0.7rem; }
+.footer a { color: var(--primary); text-decoration: none; margin: 0 5px; }
+
+/* TODO O RESTO DO CSS PERMANECE IGUAL AO FUNCIONAL */
+.dashboard { display: flex; flex-direction: column; min-height: 100vh; }
+.sidebar { background: rgba(255,255,255,0.95); backdrop-filter: blur(4px); border-bottom: 1px solid var(--gray-border); padding: 20px 24px; position: sticky; top: 0; z-index: 99; margin-top: 62px; border-radius: 0 0 28px 28px; box-shadow: 0 8px 20px rgba(0,0,0,0.03); }
+.profile-card { display: flex; align-items: center; gap: 16px; background: linear-gradient(135deg, var(--gray-light), white); border-radius: 28px; padding: 16px; border: 1px solid var(--gray-border); margin-bottom: 20px; transition: all 0.3s ease; }
+.profile-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.05); transform: translateY(-2px); }
+.profile-avatar { width: 56px; height: 56px; background: linear-gradient(135deg, var(--primary), #f39c12); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; color: white; box-shadow: 0 6px 14px rgba(230,126,34,0.3); }
+.profile-info { flex: 1; }
+.profile-name { font-size: 1.1rem; font-weight: 800; background: linear-gradient(135deg, #1e293b, #334155); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.profile-id { font-size: 0.7rem; color: var(--gray-text); margin-top: 4px; }
+.profile-badge { display: inline-block; padding: 4px 12px; background: linear-gradient(135deg, var(--primary), #f39c12); border-radius: 40px; font-size: 0.65rem; color: white; font-weight: 700; margin-top: 6px; }
+
+.users-section h4 { font-size: 0.75rem; margin-bottom: 12px; color: var(--gray-text); letter-spacing: 0.5px; }
+.user-list { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 4px; }
+.user-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; transition: all 0.2s; }
+.user-item:hover { transform: translateY(-2px); }
+.user-avatar { width: 44px; height: 44px; background: linear-gradient(135deg, #f1f5f9, #e2e8f0); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid var(--primary); color: var(--primary); font-weight: bold; transition: all 0.2s; }
+.user-item:hover .user-avatar { box-shadow: 0 4px 12px rgba(230,126,34,0.3); }
+.user-name { font-size: 0.7rem; margin-top: 6px; font-weight: 500; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; background: var(--success); box-shadow: 0 0 0 2px rgba(16,185,129,0.3); }
+
+.btn-debate { width: 100%; padding: 14px; background: white; color: var(--primary); border: 2px solid var(--primary); border-radius: 60px; font-weight: 800; cursor: pointer; transition: all 0.3s ease; margin-top: 12px; }
+.btn-debate:hover { background: linear-gradient(135deg, var(--primary), #f39c12); color: white; transform: translateY(-2px); box-shadow: 0 6px 14px rgba(230,126,34,0.3); }
+
+.main-content { padding: 28px; }
+.top-buttons { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+.top-btn, .service-btn { padding: 10px 20px; background: white; border: 1px solid var(--gray-border); border-radius: 60px; cursor: pointer; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; }
+.top-btn:hover, .service-btn:hover { border-color: var(--primary); background: var(--primary-light); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.service-buttons { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+.service-btn i { font-size: 1.2rem; color: var(--primary); }
+.dynamic-area { background: rgba(255,255,255,0.95); backdrop-filter: blur(2px); border-radius: 32px; padding: 24px; min-height: 550px; border: 1px solid var(--gray-border); box-shadow: 0 8px 30px rgba(0,0,0,0.04); transition: all 0.3s ease; }
+
+.card-dash { background: linear-gradient(135deg, white, var(--gray-light)); border-radius: 24px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--gray-border); transition: all 0.3s ease; }
+.card-dash:hover { box-shadow: 0 12px 24px rgba(0,0,0,0.08); transform: translateY(-3px); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+
+.responsive-table { display: flex; flex-direction: column; gap: 16px; }
+.responsive-card { background: white; border-radius: 24px; padding: 16px; border: 1px solid var(--gray-border); box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: all 0.2s; }
+.responsive-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+.responsive-card .row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-border); flex-wrap: wrap; }
+.responsive-card .row:last-child { border-bottom: none; }
+.responsive-card .label { font-weight: 700; color: var(--primary); min-width: 35%; }
+.responsive-card .value { color: #1e293b; word-break: break-word; text-align: right; flex: 1; }
+.card-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
+
+.modern-input, .modern-select, .modern-textarea { width: 100%; padding: 12px 14px; border: 1.5px solid var(--gray-border); border-radius: 16px; font-size: 0.9rem; transition: all 0.3s ease; margin-bottom: 12px; font-family: inherit; background: white; }
+.modern-input:focus, .modern-select:focus, .modern-textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(230,126,34,0.1); transform: scale(1.01); }
+.btn-modern { background: linear-gradient(135deg, var(--primary), #f39c12); color: white; border: none; padding: 12px 20px; border-radius: 60px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; width: 100%; }
+.btn-modern:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(230,126,34,0.3); }
+.btn-outline-modern { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-sm-modern { padding: 6px 12px; width: auto; font-size: 0.7rem; margin: 4px; border-radius: 40px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+
+.modal-modern { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 2000; }
+.modal-modern-content { background: rgba(255,255,255,0.98); border-radius: 32px; width: 90%; max-width: 500px; max-height: 85vh; overflow-y: auto; padding: 24px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: fadeInUp 0.3s ease; }
+.modal-modern-content h3 { font-size: 1.4rem; margin-bottom: 20px; color: var(--primary); border-left: 4px solid var(--primary); padding-left: 14px; }
+
+.notification-area { display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.notification-card { background: white; border-radius: 20px; padding: 12px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: all 0.2s; border: 1px solid var(--gray-border); }
+.notification-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.notification-card i { font-size: 1.4rem; }
+.notification-card .badge { background: var(--primary); color: white; border-radius: 50%; width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: bold; margin-left: 8px; }
+.notification-panel { background: white; border-radius: 24px; border: 1px solid var(--gray-border); max-height: 400px; overflow-y: auto; margin-bottom: 20px; display: none; }
+.notification-panel.active { display: block; }
+.notification-item { padding: 14px 18px; border-bottom: 1px solid var(--gray-border); cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 12px; }
+.notification-item:hover { background: var(--primary-light); }
+
+.slideshow-container { position: relative; background: linear-gradient(135deg, var(--primary-light), white); border-radius: 28px; overflow: hidden; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.slide { display: none; padding: 32px 24px; text-align: center; animation: fadeEffect 0.8s ease; }
+.slide.active { display: block; }
+@keyframes fadeEffect { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.slide h4 { color: var(--primary); font-size: 1.3rem; margin-bottom: 12px; }
+.slide p { color: #334155; font-size: 1rem; }
+.slide-dots { text-align: center; padding: 12px; }
+.dot { height: 10px; width: 10px; margin: 0 6px; background-color: var(--gray-border); border-radius: 50%; display: inline-block; cursor: pointer; transition: all 0.3s; }
+.dot.active { background-color: var(--primary); width: 24px; border-radius: 10px; }
+.prev-slide, .next-slide { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.3); color: white; border: none; padding: 12px 16px; cursor: pointer; border-radius: 50%; transition: all 0.3s; font-size: 1.2rem; }
+.prev-slide:hover, .next-slide:hover { background: var(--primary); }
+.prev-slide { left: 10px; }
+.next-slide { right: 10px; }
+
+.feed-post { background: white; border-radius: 24px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--gray-border); transition: all 0.2s; }
+.feed-post:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+.feed-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.feed-avatar { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary), #f39c12); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; }
+.feed-name { font-weight: 700; }
+.feed-date { font-size: 0.7rem; color: var(--gray-text); }
+.feed-content { margin-bottom: 12px; line-height: 1.5; }
+.feed-actions { display: flex; gap: 16px; }
+.feed-actions span { cursor: pointer; color: var(--gray-text); transition: color 0.2s; }
+.feed-actions span:hover { color: var(--primary); }
+
+.search-box { margin-bottom: 20px; position: relative; }
+.search-box input { padding-left: 40px; }
+.search-box i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-text); }
+
+.cronometro { font-family: monospace; font-size: 0.85rem; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 4px 10px; border-radius: 40px; display: inline-block; }
+
+.chat-container { display: flex; flex-direction: column; height: 500px; }
+.chat-messages { flex: 1; overflow-y: auto; background: #f8fafc; border-radius: 24px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--gray-border); }
+.message { margin-bottom: 12px; padding: 10px 14px; background: white; border-radius: 18px; border: 1px solid var(--gray-border); max-width: 85%; }
+.message-author { color: var(--primary); font-weight: 700; font-size: 0.7rem; }
+.message-text { font-size: 0.85rem; margin-top: 4px; }
+.chat-input-area { display: flex; gap: 12px; flex-wrap: wrap; }
+.chat-input-area input { flex: 1; }
+
+.payment-options { display: flex; gap: 12px; flex-direction: column; margin: 16px 0; }
+.payment-btn { padding: 12px; border-radius: 60px; border: 1px solid var(--gray-border); background: white; cursor: pointer; transition: all 0.3s ease; font-weight: 600; }
+.payment-btn:hover { border-color: var(--primary); background: var(--primary-light); transform: scale(1.02); }
+
+.modal-buttons-group { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+.modal-buttons-group button { min-width: 200px; }
+
+@media (max-width: 700px) { 
+  .hero h1 { font-size: 1.5rem; } 
+  .top-menu { flex-direction: column; gap: 8px; text-align: center; padding: 6px 12px; }
+  .top-menu-links { justify-content: center; gap: 12px; }
+  .second-menu { gap: 16px; }
+  .sidebar { margin-top: 95px; } 
+  .hero { margin-top: 95px; }
+  .responsive-card .row { flex-direction: column; gap: 4px; } 
+  .responsive-card .value { text-align: left; } 
+  .top-btn, .service-btn { padding: 8px 16px; font-size: 0.75rem; }
+  .card-dash { padding: 16px; }
+  .modal-buttons-group button { min-width: 150px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER COMPACTO EM 2 LINHAS -->
+<div class="header">
+  <div class="top-menu">
+    <div class="logo"><i class="fas fa-link"></i> StudyConnectApp</div>
+    <div class="top-menu-links">
+      <a onclick="openModal('sobre')"><i class="fas fa-info-circle"></i> Sobre</a>
+      <a onclick="openModal('termos')"><i class="fas fa-file-contract"></i> Termos</a>
+      <a onclick="openModal('contacto')"><i class="fas fa-envelope"></i> Contactos</a>
+    </div>
+  </div>
+  <div class="second-menu">
+    <a onclick="abrirServicoModal('servicos')"><i class="fas fa-hands-helping"></i> Serviços</a>
+    <a onclick="openModal('produtos')"><i class="fas fa-graduation-cap"></i> Produtos</a>
+    <a onclick="openModal('pesquisa')"><i class="fas fa-search"></i> Pesquisar</a>
+  </div>
+</div>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1><i class="fas fa-door-open"></i> StudyConnectApp</h1>
+    <h1>Conectando sonhos, construindo futuro</h1>
+    <button class="btn-primary" onclick="openModal('loginModal')"><i class="fas fa-user-astronaut"></i> Acesso / Registo</button>
+  </div>
+  <div class="footer">
+    <p>© 2026 StudyConnectApp – Plataforma de Integração para Estudantes CPLP</p>
+    <p><a href="#">Sobre</a> | <a href="#">Termos</a> | <a href="#">Privacidade</a> | <a href="#">Contactos</a></p>
+  </div>
+</section>
+
+<div id="mainApp" style="display: none;">
+<div class="dashboard">
+  <div class="sidebar">
+    <div class="profile-card">
+      <div class="profile-avatar" id="profileAvatar"><i class="fas fa-user"></i></div>
+      <div class="profile-info">
+        <div class="profile-name" id="profileName">-</div>
+        <div class="profile-id" id="profileId">-</div>
+        <div class="profile-badge" id="userTypeBadge">-</div>
+      </div>
+    </div>
+    <div class="users-section"><h4><i class="fas fa-users"></i> Utilizadores Online</h4><div class="user-list" id="userList"></div></div>
+    <button class="btn-debate" id="criarForumBtn"><i class="fas fa-comments"></i> Criar Debate</button>
+  </div>
+  <div class="main-content">
+    <div id="notificationsArea" style="margin-bottom: 24px;"></div>
+    <div class="top-buttons" id="topButtonsArea"></div>
+    <div class="service-buttons" id="serviceButtonsArea"></div>
+    <div class="dynamic-area" id="dynamicArea">
+      <div style="text-align:center;padding:60px"><i class="fas fa-globe" style="font-size:64px;color:var(--primary);opacity:0.5"></i><p style="margin-top:20px">Selecione um serviço</p></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAIS -->
+<div id="sobre" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('sobre')">&times;</span><h3>Sobre</h3><p>StudyConnectApp – Integração de estudantes CPLP em Portugal. Conectamos sonhos, construímos futuro.</p></div></div>
+<div id="termos" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('termos')">&times;</span><h3>Termos e Condições</h3><p>Plataforma de networking, consultoria e serviços académicos. Todos os dados são protegidos conforme a legislação.</p></div></div>
+<div id="contacto" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('contacto')">&times;</span><h3>Contactos</h3><p><i class="fab fa-whatsapp"></i> WhatsApp: +351 912 345 678<br><i class="fas fa-envelope"></i> Email: suporte@studyconnectapp.com<br><i class="fab fa-instagram"></i> Instagram: @studyconnectapp</p></div></div>
+
+<div id="servicosModal" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('servicosModal')">&times;</span><h3>Serviços de Apoio</h3>
+<div class="modal-buttons-group"><button class="btn-modern" onclick="mostrarDescricaoServico('juridica')"><i class="fas fa-gavel"></i> Consultoria Jurídica</button><button class="btn-modern" onclick="mostrarDescricaoServico('academica')"><i class="fas fa-book"></i> Consultoria Académica</button><button class="btn-modern" onclick="mostrarDescricaoServico('mentoria')"><i class="fas fa-chalkboard-user"></i> Mentoria</button></div>
+<div id="servicoDescricao" class="card-dash" style="margin-top:16px;display:none"></div></div></div>
+
+<div id="produtos" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('produtos')">&times;</span><h3>Produtos Online</h3><div class="modal-buttons-group"><button class="btn-modern" onclick="abrirProduto('curso')"><i class="fas fa-video"></i> Cursos Online</button><button class="btn-modern" onclick="abrirProduto('guia')"><i class="fas fa-file-pdf"></i> Guias Digitais</button><button class="btn-modern" onclick="abrirProduto('formacao')"><i class="fas fa-headphones"></i> Formações Profissionais</button></div></div></div>
+
+<div id="produtoDetalheModal" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('produtoDetalheModal')">&times;</span><h3 id="produtoTitulo"></h3><div id="produtoConteudo"></div><button class="btn-modern" onclick="abrirPagamento()">Comprar Agora</button></div></div>
+
+<div id="pagamentoModal" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('pagamentoModal')">&times;</span><h3>Finalizar Compra</h3><div class="payment-options"><button class="payment-btn" onclick="processarPagamento('MB Way')">🇵🇹 MB Way</button><button class="payment-btn" onclick="processarPagamento('Multicaixa Express')">🇦🇴 Multicaixa Express</button><button class="payment-btn" onclick="processarPagamento('PAY Direct')">🌍 PAY Direct</button></div><input type="email" id="emailCliente" class="modern-input" placeholder="Seu e-mail"><input type="tel" id="whatsappCliente" class="modern-input" placeholder="Seu WhatsApp (opcional)"><p style="font-size:0.7rem;margin-top:12px">Após o pagamento, receberá o link de download no seu e-mail/WhatsApp.</p></div></div>
+
+<div id="pesquisa" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('pesquisa')">&times;</span><h3>Pesquisar Cidades Portuguesas</h3><input list="cidadesPT" id="pesquisaCidade" class="modern-input" placeholder="Digite ou clique para ver cidades..."><datalist id="cidadesPT"><option>Lisboa</option><option>Porto</option><option>Coimbra</option><option>Braga</option><option>Faro</option><option>Aveiro</option><option>Évora</option><option>Viseu</option><option>Guimarães</option><option>Setúbal</option><option>Leiria</option><option>Santarém</option><option>Castelo Branco</option><option>Beja</option><option>Portalegre</option></datalist><button class="btn-modern" onclick="buscarCidade()">Buscar</button><div id="cidadeInfo" style="margin-top:20px"></div></div></div>
+
+<div id="loginModal" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('loginModal')">&times;</span><h3>Acesso à Plataforma</h3><input type="text" id="loginUser" class="modern-input" placeholder="Nome de utilizador"><input type="password" id="loginPass" class="modern-input" placeholder="Senha"><button class="btn-modern" onclick="processarLogin()">Entrar</button><div class="link-modal" onclick="abrirNovoRegisto()">🔹 Novo Registo</div><div class="link-modal" onclick="abrirCriarConta()">🔹 Criar Conta</div><p style="margin-top:12px;font-size:0.7rem;text-align:center;color:var(--gray-text)">Credenciais demo:<br>Admin/123 | Utente/123 | Prestador/123 | Universidade/123</p></div></div>
+
+<div id="novoRegistoModal" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('novoRegistoModal')">&times;</span><h3>Novo Registo</h3>
+<div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+<label style="display:flex;align-items:center;gap:6px"><input type="radio" name="tipoRegisto" value="utente" onchange="mudarFormularioRegisto()"> Utente</label>
+<label style="display:flex;align-items:center;gap:6px"><input type="radio" name="tipoRegisto" value="universidade" onchange="mudarFormularioRegisto()"> Universidade</label>
+<label style="display:flex;align-items:center;gap:6px"><input type="radio" name="tipoRegisto" value="consultor" onchange="mudarFormularioRegisto()"> Consultor</label>
+</div>
+<div id="formularioRegisto"></div>
+<button class="btn-modern" onclick="enviarRegisto()">Enviar Registo</button></div></div>
+
+<div id="criarContaModal" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('criarContaModal')">&times;</span><h3>Criar Conta de Utilizador</h3><input type="text" id="contaIdUsuario" class="modern-input" placeholder="ID recebido por SMS/Email"><input type="text" id="contaNomeUsuario" class="modern-input" placeholder="Nome de utilizador"><input type="password" id="contaSenha" class="modern-input" placeholder="Senha"><input type="password" id="contaConfirmarSenha" class="modern-input" placeholder="Repetir senha"><button class="btn-modern" onclick="criarContaFinal()">Criar Conta</button></div></div>
+
+<div id="debateModal" class="modal-modern"><div class="modal-modern-content"><h3>🎯 Criar Novo Debate</h3><input id="debateTitulo" class="modern-input" placeholder="Título do debate"><select id="debateCategoria" class="modern-select"><option value="geral">💬 Discussão Geral</option><option value="academica">🎓 Dúvidas Académicas</option><option value="juridica">⚖️ Dúvidas Jurídicas</option><option value="eventos">🏛️ Eventos Universitários</option></select><textarea id="debateDesc" rows="3" class="modern-textarea" placeholder="Descrição inicial..."></textarea><div style="display:flex;gap:12px;margin-top:16px"><button class="btn-outline-modern btn-sm-modern" id="cancelDebateBtn">Cancelar</button><button class="btn-modern btn-sm-modern" id="createEventBtn">Criar Debate</button></div></div></div>
+
+<div id="solicitarConsultaModal" class="modal-modern"><div class="modal-modern-content"><span style="float:right;cursor:pointer" onclick="closeModal('solicitarConsultaModal')">&times;</span><h3>Solicitar Consulta</h3><select id="consultaTipo" class="modern-select"><option value="juridica">⚖️ Consultoria Jurídica</option><option value="academica">📚 Consultoria Académica</option><option value="mentoria">🧠 Mentoria</option></select><input type="date" id="consultaData" class="modern-input"><input type="time" id="consultaHora" class="modern-input"><textarea id="consultaAssunto" rows="3" class="modern-textarea" placeholder="Descreva o seu pedido..."></textarea><button class="btn-modern" onclick="solicitarConsulta()">Solicitar</button></div></div>
+
+<div id="consultaOnlineModal" class="modal-modern"><div class="modal-modern-content" style="text-align:center"><span style="float:right;cursor:pointer" onclick="fecharConsultaOnline()">&times;</span><h3>📹 Consulta Online</h3><div id="cameraSimulada" style="background:linear-gradient(135deg,#1e293b,#0f172a);height:300px;border-radius:24px;display:flex;align-items:center;justify-content:center;margin:16px 0"><i class="fas fa-video" style="font-size:64px;color:white;opacity:0.7"></i><p style="color:white;margin-left:12px">Câmara ativada - Consulta em curso</p></div><button class="btn-modern" onclick="fecharConsultaOnline()">Terminar Chamada</button></div></div>
+
+<script>
+// ========== JAVASCRIPT COMPLETO E FUNCIONAL (VERSÃO ORIGINAL ÍNTEGRA) ==========
+let currentUser = { logged: false, role: null, username: null, nome: null, id: null, escritorio: null };
+let notificacoesDebate = [];
+let notificacoesAgendamento = [];
+let usersDB = [
+    { id:1, username:"Admin", password:"123", role:"admin", nome:"Administrador", status:"aprovado" },
+    { id:2, username:"Utente", password:"123", role:"utente", nome:"Ana Oliveira", status:"aprovado", tipoPessoa:"singular", areaEstudo:"Engenharia" },
+    { id:3, username:"Prestador", password:"123", role:"consultor", nome:"Dr. António Santos", status:"aprovado", tipoConsultor:"individual", especialidade:"juridica" },
+    { id:4, username:"Universidade", password:"123", role:"universidade", nome:"Universidade de Coimbra", status:"aprovado", logo:"🏛️", cidade:"Coimbra" }
+];
+let pedidosRegisto = [];
+let logsAcesso = [];
+let debates = [
+    { id:1, titulo:"Como pedir visto de estudante?", categoria:"juridica", autor:"Ana Oliveira", autorRole:"utente", data:new Date(), mensagens:[{autor:"Dr. António", texto:"Pode solicitar o visto D3 no consulado..."}] }
+];
+let feedPosts = [
+    { id:1, autor:"Universidade de Coimbra", autorRole:"universidade", conteudo:"Inscrições abertas para o Mestrado em Engenharia Informática! Prazo: 30/06", data:new Date(), likes:15, comentarios:[] },
+    { id:2, autor:"Ana Oliveira", autorRole:"utente", conteudo:"Alguém sabe como funciona o reconhecimento de diploma em Portugal?", data:new Date(), likes:8, comentarios:[] }
+];
+let consultas = [
+    { id:1, cliente:"Ana Oliveira", clienteId:2, tipo:"juridica", data:"2026-02-20", hora:"14:00", assunto:"Visto de estudo", status:"pendente", cor:"#f59e0b", prestadorAssociado:null, confirmada:false, reagendamentos:0, exclusoesMes:0, dataConfirmacao:null, cronometroAtivo:false, tipoConsulta:"online" }
+];
+let universidades = [
+    { id:1, nome:"Universidade de Coimbra", logo:"🏛️", cidade:"Coimbra", descricao:"Universidade pública fundada em 1290", cursos:[{id:1,titulo:"Engenharia Informática", duracao:"3 anos", propina:697},{id:2,titulo:"Direito", duracao:"4 anos", propina:697}], bolsas:[{id:1,titulo:"Bolsa de Mérito", valor:2000, prazo:"30/06"}], eventos:[{id:1,titulo:"Dia Aberto", data:"2026-03-15", local:"Coimbra"}] }
+];
+let guias = [
+    { id:1, titulo:"Visto de Estudante - Passo a Passo", categoria:"Vistos", conteudo:"1. Candidatar-se a uma universidade\n2. Obter carta de aceitação\n3. Agendar visto no consulado\n4. Apresentar documentos\n5. Aguardar resposta" },
+    { id:2, titulo:"NIF - Número de Identificação Fiscal", categoria:"Documentação", conteudo:"Dirija-se às Finanças com: passaporte, comprovativo de morada, título de residência ou visto. Agende online primeiro." },
+    { id:3, titulo:"NISS - Segurança Social", categoria:"Documentação", conteudo:"Para trabalhar em Portugal, necessita de NISS. Solicite presencialmente ou online com os seus dados." }
+];
+let currentChatMessages = [];
+let consultaIntervals = {};
+let agendaConsultores = JSON.parse(localStorage.getItem("agendaConsultor") || "[]");
+let candidaturas = [];
+let inscricoes = [];
+
+function addNotificacaoDebate(msg, tipo = "debate") {
+    let id = Date.now();
+    notificacoesDebate.unshift({ id, msg, tipo, lida: false, data: new Date().toLocaleString() });
+    renderNotificacoes();
+}
+function addNotificacaoAgendamento(msg, modulo, tipo = "agendamento") {
+    let id = Date.now();
+    notificacoesAgendamento.unshift({ id, msg, modulo, tipo, lida: false, data: new Date().toLocaleString() });
+    renderNotificacoes();
+}
+function renderNotificacoes() {
+    if (!currentUser.logged) return;
+    let area = document.getElementById("notificationsArea");
+    if (!area) return;
+    let debateNotifs = notificacoesDebate.filter(n => !n.lida);
+    let agendaNotifs = notificacoesAgendamento.filter(n => n.modulo === currentUser.role && !n.lida);
+    area.innerHTML = `
+        <div class="notification-area">
+            <div class="notification-card" onclick="toggleNotifPanel('debatePanel')">
+                <i class="fas fa-comments" style="color:var(--primary)"></i>
+                <span>Debates / Fórum</span>
+                <span class="badge">${debateNotifs.length}</span>
+            </div>
+            <div class="notification-card" onclick="toggleNotifPanel('agendaPanel')">
+                <i class="fas fa-calendar-check" style="color:var(--success)"></i>
+                <span>Agendamentos</span>
+                <span class="badge">${agendaNotifs.length}</span>
+            </div>
+        </div>
+        <div id="debatePanel" class="notification-panel">
+            <div class="notification-header" style="padding:12px; background:var(--primary-light); font-weight:700">📢 Notificações de Debate/Fórum</div>
+            <div class="notification-list">
+                ${notificacoesDebate.filter(n => !n.lida).map(n => `
+                    <div class="notification-item" onclick="marcarLidaDebate(${n.id})">
+                        <div class="notif-icon" style="background:var(--primary-light)"><i class="fas fa-comment"></i></div>
+                        <div class="notif-content">
+                            <div class="notif-title">${n.msg.substring(0,80)}</div>
+                            <div class="notif-time">${n.data}</div>
+                        </div>
+                    </div>
+                `).join('') || '<div style="padding:20px;text-align:center">Sem notificações</div>'}
+            </div>
+        </div>
+        <div id="agendaPanel" class="notification-panel">
+            <div class="notification-header" style="padding:12px; background:var(--success); color:white; font-weight:700">📅 Notificações de Agendamento</div>
+            <div class="notification-list">
+                ${notificacoesAgendamento.filter(n => n.modulo === currentUser.role && !n.lida).map(n => `
+                    <div class="notification-item" onclick="marcarLidaAgendamento(${n.id})">
+                        <div class="notif-icon" style="background:var(--success)"><i class="fas fa-bell"></i></div>
+                        <div class="notif-content">
+                            <div class="notif-title">${n.msg}</div>
+                            <div class="notif-time">${n.data}</div>
+                        </div>
+                    </div>
+                `).join('') || '<div style="padding:20px;text-align:center">Sem notificações</div>'}
+            </div>
+        </div>
+    `;
+}
+function toggleNotifPanel(panelId) {
+    document.getElementById("debatePanel").classList.remove("active");
+    document.getElementById("agendaPanel").classList.remove("active");
+    let panel = document.getElementById(panelId);
+    if (panel) panel.classList.toggle("active");
+}
+function marcarLidaDebate(id) {
+    let n = notificacoesDebate.find(x => x.id === id);
+    if (n) n.lida = true;
+    renderNotificacoes();
+}
+function marcarLidaAgendamento(id) {
+    let n = notificacoesAgendamento.find(x => x.id === id);
+    if (n) n.lida = true;
+    renderNotificacoes();
+}
+function addLogAcesso(){ logsAcesso.unshift({ user:currentUser.username, role:currentUser.role, data:new Date().toLocaleString() }); if(logsAcesso.length>50) logsAcesso.pop(); }
+function openModal(id){ document.getElementById(id).style.display="flex"; }
+function closeModal(id){ document.getElementById(id).style.display="none"; }
+function abrirServicoModal(){ openModal('servicosModal'); }
+function mostrarDescricaoServico(tipo){
+    let descricao = "";
+    if(tipo==="juridica") descricao = "⚖️ Consultoria Jurídica: Aconselhamento especializado em direito migratório, visto de estudante, regularização, NIF, NISS, e questões legais para estudantes internacionais.";
+    else if(tipo==="academica") descricao = "📚 Consultoria Académica: Apoio na escolha de cursos, universidades, preparação de candidaturas, reconhecimento de diplomas e orientação de estudos.";
+    else descricao = "🧠 Mentoria: Orientação personalizada para integração cultural, preparação para entrevistas, networking profissional e acompanhamento de carreira.";
+    document.getElementById("servicoDescricao").innerHTML = `<p>${descricao}</p><div class="link-modal" onclick="fecharModalEabrirRegisto()">📝 Mais informações → Regista-te</div>`;
+    document.getElementById("servicoDescricao").style.display = "block";
+}
+function fecharModalEabrirRegisto(){ closeModal('servicosModal'); openModal('loginModal'); }
+function buscarCidade(){
+    let cid=document.getElementById("pesquisaCidade").value;
+    if(!cid){ alert("Selecione uma cidade"); return; }
+    document.getElementById("cidadeInfo").innerHTML=`<div class="card-dash"><h4>📍 ${cid}</h4><p>🎓 Universidades: Universidade de ${cid}, Instituto Politécnico<br>🏫 Escolas: Escolas públicas e privadas<br>💼 Centro de Emprego: IEFP ${cid}<br>🏛️ Serviços Públicos: Loja do Cidadão, SEF, Finanças, Centro de Saúde</p><button class="btn-sm-modern" onclick="alert('Mais informações sobre ${cid} em breve')">Saber mais</button></div>`;
+}
+function abrirProduto(tipo){
+    let titulo="", conteudo="", preco="";
+    if(tipo==="curso"){ titulo="🎓 Curso Online: Migração para Portugal"; conteudo="Aprenda tudo sobre vistos, documentação e integração. Duração: 8h. Certificado incluído."; preco="€49,90"; }
+    else if(tipo==="guia"){ titulo="📘 Guia Digital: Visto de Estudante"; conteudo="Passo a passo completo, formulários, prazos e dicas exclusivas. 120 páginas."; preco="€19,90"; }
+    else{ titulo="🎧 Formação: Preparação para Entrevistas"; conteudo="Workshop online com mentores especializados. Inclui simulação de entrevista."; preco="€79,90"; }
+    document.getElementById("produtoTitulo").innerText=titulo;
+    document.getElementById("produtoConteudo").innerHTML=`<div class="card-dash"><p>${conteudo}</p><p style="font-size:1.5rem;font-weight:800;color:var(--primary);margin-top:12px">${preco}</p></div>`;
+    closeModal('produtos'); openModal('produtoDetalheModal');
+}
+function abrirPagamento(){ closeModal('produtoDetalheModal'); openModal('pagamentoModal'); }
+function processarPagamento(metodo){
+    let email=document.getElementById("emailCliente").value;
+    let whats=document.getElementById("whatsappCliente").value;
+    if(!email && !whats){ alert("Preencha o e-mail ou WhatsApp para receber o produto"); return; }
+    alert(`✅ Pagamento simulado via ${metodo}.\nProduto enviado para ${email || whats}`);
+    closeModal('pagamentoModal');
+    document.getElementById("emailCliente").value="";
+    document.getElementById("whatsappCliente").value="";
+}
+function mudarFormularioRegisto(){
+    let tipo=document.querySelector('input[name="tipoRegisto"]:checked')?.value;
+    let html="";
+    if(tipo==="utente"){
+        html=`<input type="text" id="regNome" class="modern-input" placeholder="Nome completo"><input type="text" id="regSobrenome" class="modern-input" placeholder="Sobrenome"><input type="date" id="regDataNasc" class="modern-input"><input type="text" id="regNacionalidade" class="modern-input" placeholder="Nacionalidade"><input type="text" id="regLocal" class="modern-input" placeholder="Local de inscrição (cidade/pais)"><input type="text" id="regAreaEstudo" class="modern-input" placeholder="Área de estudo"><select id="regNivel" class="modern-select"><option>Licenciatura</option><option>Mestrado</option><option>Doutoramento</option><option>Curso Técnico</option></select><input type="email" id="regEmail" class="modern-input" placeholder="E-mail"><input type="tel" id="regTelefone" class="modern-input" placeholder="Telefone">`;
+    } else if(tipo==="universidade"){
+        html=`<input type="text" id="regNome" class="modern-input" placeholder="Nome da Instituição"><input type="text" id="regLogo" class="modern-input" placeholder="URL do Logo (opcional)"><input type="url" id="regWebsite" class="modern-input" placeholder="Website"><input type="email" id="regEmail" class="modern-input" placeholder="E-mail de contacto"><input type="tel" id="regTelefone" class="modern-input" placeholder="Telefone"><input type="text" id="regMorada" class="modern-input" placeholder="Morada"><input type="text" id="regCidade" class="modern-input" placeholder="Cidade">`;
+    } else if(tipo==="consultor"){
+        html=`<div style="display:flex;gap:12px;margin-bottom:16px"><label><input type="radio" name="subTipoConsultor" value="individual" onchange="mudarSubConsultor()"> Individual</label><label><input type="radio" name="subTipoConsultor" value="empresarial" onchange="mudarSubConsultor()"> Empresarial</label></div><div id="subConsultorCampos"><input type="text" id="regNome" class="modern-input" placeholder="Nome completo"><input type="text" id="regCedula" class="modern-input" placeholder="Nº Cédula/Registo"><select id="regEspecialidade" class="modern-select"><option value="juridica">Consultoria Jurídica</option><option value="academica">Consultoria Académica</option><option value="mentoria">Mentoria</option></select><input type="email" id="regEmail" class="modern-input" placeholder="E-mail"><input type="tel" id="regTelefone" class="modern-input" placeholder="Telefone"></div>`;
+    }
+    document.getElementById("formularioRegisto").innerHTML=html;
+    if(tipo==="consultor") mudarSubConsultor();
+}
+function mudarSubConsultor(){
+    let sub=document.querySelector('input[name="subTipoConsultor"]:checked')?.value;
+    let campoNome=document.getElementById("regNome");
+    if(sub==="empresarial" && campoNome) campoNome.placeholder="Nome da Empresa";
+    else if(campoNome) campoNome.placeholder="Nome completo";
+}
+function enviarRegisto(){
+    let tipo=document.querySelector('input[name="tipoRegisto"]:checked')?.value;
+    if(!tipo){ alert("Selecione o tipo de utilizador"); return; }
+    let nome=document.getElementById("regNome")?.value;
+    let email=document.getElementById("regEmail")?.value;
+    if(!nome || !email){ alert("Preencha os campos obrigatórios"); return; }
+    let pedido={ id:Date.now(), nome, email, tipo, status:"pendente", data:new Date() };
+    if(tipo==="utente") pedido.areaEstudo=document.getElementById("regAreaEstudo")?.value;
+    if(tipo==="universidade") pedido.cidade=document.getElementById("regCidade")?.value;
+    if(tipo==="consultor") pedido.especialidade=document.getElementById("regEspecialidade")?.value;
+    pedidosRegisto.push(pedido);
+    addNotificacaoAgendamento(`📝 Novo registo pendente: ${nome} (${tipo})`, "admin");
+    alert("✅ Registo solicitado! Aguarde validação do administrador. Receberá um ID por SMS/Email para criar a sua conta.");
+    closeModal('novoRegistoModal');
+}
+function abrirNovoRegisto(){ closeModal('loginModal'); openModal('novoRegistoModal'); mudarFormularioRegisto(); }
+function abrirCriarConta(){ closeModal('loginModal'); openModal('criarContaModal'); }
+function criarContaFinal(){
+    let idRecebido=document.getElementById("contaIdUsuario").value;
+    let usuario=document.getElementById("contaNomeUsuario").value;
+    let senha=document.getElementById("contaSenha").value;
+    let confirma=document.getElementById("contaConfirmarSenha").value;
+    if(!idRecebido || !usuario || !senha){ alert("Preencha todos os campos"); return; }
+    if(senha!==confirma){ alert("Senhas não coincidem"); return; }
+    let userExists=usersDB.find(u=>u.username===usuario);
+    if(userExists){ alert("Nome de utilizador já existe"); return; }
+    let pedidoAprovado=pedidosRegisto.find(p=>p.id.toString()===idRecebido || p.email===idRecebido);
+    if(!pedidoAprovado){ alert("ID inválido. Solicite um novo registo primeiro."); return; }
+    let role=pedidoAprovado.tipo;
+    let novoId=usersDB.length+10;
+    usersDB.push({ id:novoId, username:usuario, password:senha, role:role, nome:pedidoAprovado.nome, status:"aprovado" });
+    addNotificacaoDebate(`✅ Conta criada com sucesso! Bem-vindo ${usuario}`);
+    alert("Conta criada! Faça login.");
+    closeModal('criarContaModal');
+    openModal('loginModal');
+}
+function processarLogin(){
+    let u=document.getElementById("loginUser").value.trim();
+    let p=document.getElementById("loginPass").value.trim();
+    let found=usersDB.find(user=>user.username===u && user.password===p && user.status==="aprovado");
+    if(!found){ alert("Credenciais inválidas ou conta não aprovada."); return; }
+    currentUser={ logged:true, role:found.role, username:found.username, nome:found.nome, id:found.id, escritorio:found.escritorio };
+    addLogAcesso();
+    closeModal('loginModal');
+    document.querySelector(".hero").style.display="none";
+    document.getElementById("mainApp").style.display="block";
+    let badgeText=found.role==="admin"?"Administrador":(found.role==="consultor"?"Consultor":(found.role==="universidade"?"Universidade":"Utente"));
+    document.getElementById("profileName").innerText=found.nome;
+    document.getElementById("profileId").innerText=`ID: ${found.role.toUpperCase()}-${found.id}`;
+    document.getElementById("userTypeBadge").innerText=badgeText;
+    renderizarPorPerfil();
+}
+function logout(){ currentUser.logged=false; document.querySelector(".hero").style.display="flex"; document.getElementById("mainApp").style.display="none"; }
+
+// SLIDESHOW
+let slideIndex = 0;
+function iniciarSlideshow() {
+    let slides = document.getElementsByClassName("slide");
+    if (slides.length === 0) return;
+    for (let i = 0; i < slides.length; i++) slides[i].classList.remove("active");
+    slideIndex++;
+    if (slideIndex > slides.length) slideIndex = 1;
+    slides[slideIndex-1].classList.add("active");
+    let dots = document.getElementsByClassName("dot");
+    for (let i = 0; i < dots.length; i++) dots[i].classList.remove("active");
+    if (dots[slideIndex-1]) dots[slideIndex-1].classList.add("active");
+    setTimeout(iniciarSlideshow, 5000);
+}
+function mudarSlide(n) {
+    let slides = document.getElementsByClassName("slide");
+    if (slides.length === 0) return;
+    for (let i = 0; i < slides.length; i++) slides[i].classList.remove("active");
+    slideIndex += n;
+    if (slideIndex > slides.length) slideIndex = 1;
+    if (slideIndex < 1) slideIndex = slides.length;
+    slides[slideIndex-1].classList.add("active");
+    let dots = document.getElementsByClassName("dot");
+    for (let i = 0; i < dots.length; i++) dots[i].classList.remove("active");
+    if (dots[slideIndex-1]) dots[slideIndex-1].classList.add("active");
+}
+function renderSlideshow() {
+    let noticias = [
+        { titulo: "🎓 Universidade de Coimbra", descricao: "Inscrições abertas para o ano letivo 2026/2027. Consulte os cursos disponíveis." },
+        { titulo: "📄 Visto de Estudante", descricao: "Novos prazos para solicitação do visto D3. Agende sua entrevista consular." },
+        { titulo: "🏠 Título de Residência", descricao: "Documentação necessária para renovação do título de residência para estudantes." },
+        { titulo: "👨‍👩‍👧 Agrupamento Familiar", descricao: "Saiba como solicitar o reagrupamento familiar em Portugal para estudantes." }
+    ];
+    let html = `
+        <div class="slideshow-container">
+            <button class="prev-slide" onclick="mudarSlide(-1)">❮</button>
+            ${noticias.map((n, idx) => `<div class="slide"><h4>${n.titulo}</h4><p>${n.descricao}</p></div>`).join('')}
+            <button class="next-slide" onclick="mudarSlide(1)">❯</button>
+            <div class="slide-dots">
+                ${noticias.map((_, idx) => `<span class="dot" onclick="mudarSlide(${idx+1 - slideIndex})"></span>`).join('')}
+            </div>
+        </div>
+    `;
+    return html;
+}
+function renderFeedNoticias() {
+    let html = renderSlideshow() + `
+        <div class="card-dash">
+            <h3>📰 Últimas Notícias</h3>
+            <div class="feed-post">
+                <div class="feed-header"><div class="feed-avatar"><i class="fas fa-graduation-cap"></i></div><div class="feed-name">Universidade de Lisboa</div></div>
+                <div class="feed-content">Novo programa de bolsas para estudantes internacionais. Candidaturas até 30/06.</div>
+            </div>
+            <div class="feed-post">
+                <div class="feed-header"><div class="feed-avatar"><i class="fas fa-passport"></i></div><div class="feed-name">SEF - Serviço de Estrangeiros</div></div>
+                <div class="feed-content">Atualização nos prazos para renovação de título de residência para estudantes.</div>
+            </div>
+            <div class="feed-post">
+                <div class="feed-header"><div class="feed-avatar"><i class="fas fa-home"></i></div><div class="feed-name">Governo de Portugal</div></div>
+                <div class="feed-content">Novas regras para o reagrupamento familiar de cidadãos estrangeiros residentes.</div>
+            </div>
+        </div>
+    `;
+    document.getElementById("dynamicArea").innerHTML = html;
+    slideIndex = 0;
+    setTimeout(iniciarSlideshow, 100);
+}
+
+// FUNÇÕES DOS PERFIS (UTENTE, CONSULTOR, UNIVERSIDADE, ADMIN)
+function renderUniversidades(){
+    let searchHtml=`<div class="search-box"><i class="fas fa-search"></i><input type="text" id="searchUni" class="modern-input" placeholder="Buscar universidade por nome ou cidade..." style="padding-left:40px"></div>`;
+    let html=searchHtml+`<div class="grid-2" id="uniList">`;
+    universidades.forEach(u=>{ html+=`<div class="card-dash uni-card" data-nome="${u.nome.toLowerCase()}" data-cidade="${u.cidade.toLowerCase()}"><h4>${u.logo} ${u.nome}</h4><p>📍 ${u.cidade}</p><p>${u.descricao}</p><button class="btn-sm-modern" onclick="verDetalhesUniversidade(${u.id})">Ver detalhes →</button></div>`; });
+    html+=`</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+    document.getElementById("searchUni")?.addEventListener("keyup",function(){
+        let term=this.value.toLowerCase();
+        document.querySelectorAll(".uni-card").forEach(c=>{
+            let nome=c.getAttribute("data-nome"), cidade=c.getAttribute("data-cidade");
+            c.style.display=(nome.includes(term)||cidade.includes(term))?"block":"none";
+        });
+    });
+}
+function verDetalhesUniversidade(id){
+    let u=universidades.find(x=>x.id===id);
+    let html=`<button class="btn-outline-modern btn-sm-modern" onclick="renderUniversidades()">← Voltar</button><div><h3>${u.logo} ${u.nome}</h3><div class="grid-2"><div class="card-dash"><h4>📚 Cursos</h4>${u.cursos.map(c=>`<div><strong>${c.titulo}</strong><br>Duração: ${c.duracao} | €${c.propina}/ano<br><button class="btn-sm-modern" onclick="candidatarCurso(${c.id},'${c.titulo}','${u.nome}')">Candidatar-me</button></div><hr>`).join('')}</div><div class="card-dash"><h4>💰 Bolsas</h4>${u.bolsas.map(b=>`<div><strong>${b.titulo}</strong><br>€${b.valor} | Prazo: ${b.prazo}<br><button class="btn-sm-modern" onclick="alert('Candidatura enviada para ${b.titulo}')">Candidatar</button></div><hr>`).join('')}</div><div class="card-dash"><h4>📅 Eventos</h4>${u.eventos.map(e=>`<div><strong>${e.titulo}</strong><br>📅 ${e.data} | 📍 ${e.local}<br><button class="btn-sm-modern" onclick="alert('Inscrição confirmada para ${e.titulo}')">Inscrever-me</button></div><hr>`).join('')}</div></div></div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function candidatarCurso(cursoId, titulo, universidade){
+    addNotificacaoAgendamento(`✅ Nova candidatura para ${titulo} - ${universidade}`, "universidade");
+    addNotificacaoDebate(`📋 Candidatura enviada: ${titulo}`);
+    alert(`Candidatura enviada para ${titulo}!`);
+}
+function renderComparador(){
+    let html=`<h3>📊 Comparador de Cursos</h3><div class="grid-3" id="cursosLista">`;
+    universidades.forEach(u=>{ u.cursos.forEach(c=>{ html+=`<div class="card-dash"><h4>${c.titulo}</h4><p>🏫 ${u.nome}</p><p>💰 €${c.propina}/ano</p><p>⏱️ ${c.duracao}</p><button class="btn-sm-modern" onclick="adicionarComparador('${c.titulo}',${c.propina})">➕ Comparar</button></div>`; }); });
+    html+=`</div><div class="card-dash"><h4>📋 Cursos Selecionados</h4><div id="comparadorLista"></div></div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+let comparadorLista=[];
+function adicionarComparador(titulo,propina){ if(comparadorLista.length>=3){ alert("Máximo 3 cursos"); return; } comparadorLista.push({titulo,propina}); let media=comparadorLista.reduce((a,b)=>a+b.propina,0)/comparadorLista.length; document.getElementById("comparadorLista").innerHTML=comparadorLista.map(c=>`📘 ${c.titulo} - €${c.propina}/ano`).join('<br>')+`<hr><strong>Média: €${media.toFixed(2)}/ano</strong>`; }
+function renderGuias(){
+    let html=`<h3>📖 Guias Práticos</h3><div class="responsive-table">${guias.map(g=>`<div class="responsive-card"><div class="row"><span class="label">${g.titulo}</span><span class="value">${g.categoria}</span></div><div class="row"><span class="label">Conteúdo:</span><span class="value">${g.conteudo.substring(0,150)}...</span></div><button class="btn-sm-modern" onclick="alert('${g.conteudo.replace(/'/g,"\\'")}')">Ler guia completo</button></div>`).join('')}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function renderRedeSocial(){
+    let html=`<h3>👥 Comunidade</h3><div id="feedContainer">${feedPosts.map(p=>`<div class="feed-post"><div class="feed-header"><div class="feed-avatar">${p.autor.charAt(0)}</div><div><div class="feed-name">${p.autor}</div><div class="feed-date">${p.data.toLocaleDateString()}</div></div></div><div class="feed-content">${p.conteudo}</div><div class="feed-actions"><span onclick="likePost(${p.id})"><i class="far fa-heart"></i> ${p.likes}</span><span onclick="alert('Comentário enviado (simulação)')"><i class="far fa-comment"></i> Comentar</span></div></div>`).join('')}</div><div class="card-dash"><textarea id="novoPost" class="modern-input" rows="2" placeholder="Partilhe algo com a comunidade..."></textarea><button class="btn-modern" onclick="publicarPost()">Publicar</button></div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function likePost(id){ let p=feedPosts.find(x=>x.id===id); if(p){ p.likes++; renderRedeSocial(); } }
+function publicarPost(){ let c=document.getElementById("novoPost")?.value; if(c){ feedPosts.unshift({ id:Date.now(), autor:currentUser.nome, autorRole:currentUser.role, conteudo:c, data:new Date(), likes:0, comentarios:[] }); addNotificacaoDebate(`📝 Nova publicação de ${currentUser.nome}`); renderRedeSocial(); } }
+function renderMinhasCandidaturas(){ document.getElementById("dynamicArea").innerHTML=`<div class="card-dash"><h3>📋 Minhas Candidaturas</h3><p>Nenhuma candidatura registada.</p></div>`; }
+function renderBiblioteca(){
+    let html=`<h3>📚 Minha Biblioteca</h3><div class="grid-2">${[{titulo:"Guia do Estudante em Portugal", autor:"StudyConnect", preco:0},{titulo:"Manual do Visto D3", autor:"SEF", preco:0}].map(b=>`<div class="card-dash"><i class="fas fa-book" style="color:var(--primary)"></i> <strong>${b.titulo}</strong><br>${b.autor}<button class="btn-sm-modern" onclick="alert('Abrir ${b.titulo}')">Ler</button></div>`).join('')}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function renderSolicitarConsulta(){ openModal('solicitarConsultaModal'); }
+function solicitarConsulta(){
+    let tipo=document.getElementById("consultaTipo").value;
+    let data=document.getElementById("consultaData").value;
+    let hora=document.getElementById("consultaHora").value;
+    let assunto=document.getElementById("consultaAssunto").value;
+    if(!data||!hora){ alert("Preencha data e hora"); return; }
+    let novaConsulta={ id:consultas.length+1, cliente:currentUser.nome, clienteId:currentUser.id, tipo, data, hora, assunto, status:"pendente", cor:"#f59e0b", prestadorAssociado:null, confirmada:false, reagendamentos:0, exclusoesMes:0, tipoConsulta:"online" };
+    consultas.push(novaConsulta);
+    addNotificacaoAgendamento(`🟡 Nova solicitação de consulta de ${currentUser.nome} (${tipo})`, "admin");
+    alert("Consulta solicitada! O administrador irá associar a um consultor.");
+    closeModal('solicitarConsultaModal');
+    renderMinhasConsultas();
+}
+function renderMinhasConsultas(){
+    let minhas=consultas.filter(c=>c.cliente===currentUser.nome);
+    if(minhas.length===0){ document.getElementById("dynamicArea").innerHTML="<div class='card-dash'><p>Nenhuma consulta</p></div>"; return; }
+    let html=`<h3>📅 Minhas Consultas</h3><div class="responsive-table">${minhas.map(c=>`<div class="responsive-card"><div class="row"><span class="label">Tipo:</span><span class="value">${c.tipo}</span></div><div class="row"><span class="label">Data/Hora:</span><span class="value">${c.data} ${c.hora}</span></div><div class="row"><span class="label">Status:</span><span class="value" style="color:${c.cor}">${c.status}</span></div>${c.prestadorAssociado?`<div class="row"><span class="label">Consultor:</span><span class="value">${c.prestadorAssociado}</span></div>`:''}<div class="card-actions">${c.tipoConsulta==="online" && c.confirmada ? `<button class="btn-sm-modern" onclick="abrirConsultaOnline(${c.id})">📹 Iniciar Consulta</button>` : ''}</div></div>`).join('')}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function abrirConsultaOnline(id){ openModal('consultaOnlineModal'); }
+function fecharConsultaOnline(){ closeModal('consultaOnlineModal'); }
+function renderForumNetworking(){
+    document.getElementById("dynamicArea").innerHTML=`<div class="chat-container"><div class="chat-messages" id="chatMessages">${currentChatMessages.map(m=>`<div class="message"><div class="message-author">${m.author}</div><div class="message-text">${m.text}</div></div>`).join('')}</div><div class="chat-input-area"><input type="text" id="chatInput" class="modern-input" placeholder="Mensagem..." style="flex:1"><button class="btn-modern" id="sendChatBtn" style="width:auto">Enviar</button><button class="btn-outline-modern" id="sendAudioBtn" style="width:auto"><i class="fas fa-microphone"></i> Áudio</button></div></div>`;
+    document.getElementById("sendChatBtn").onclick=()=>{ let inp=document.getElementById("chatInput"); if(inp.value){ currentChatMessages.push({author:currentUser.nome, text:inp.value}); renderForumNetworking(); addNotificacaoDebate(`💬 Nova mensagem de ${currentUser.nome} no chat`); } };
+    document.getElementById("sendAudioBtn").onclick=()=>alert("🎤 Áudio enviado (simulação)");
+}
+function renderDebates(){
+    let html=`<h3>💬 Fórum de Debates</h3><div class="responsive-table">${debates.map(d=>`<div class="responsive-card"><div class="row"><span class="label">${d.titulo}</span><span class="value">${d.categoria} | por ${d.autor}</span></div><div class="row"><span class="label">Respostas:</span><span class="value">${d.mensagens.length}</span></div><button class="btn-sm-modern" onclick="verDebate(${d.id})">Participar</button></div>`).join('')}</div><button class="btn-modern" onclick="document.getElementById('debateModal').style.display='flex'">+ Criar Debate</button>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function verDebate(id){
+    let d=debates.find(x=>x.id===id);
+    let html=`<button class="btn-outline-modern btn-sm-modern" onclick="renderDebates()">← Voltar</button><div class="card-dash"><h3>${d.titulo}</h3><p>Categoria: ${d.categoria} | Autor: ${d.autor}</p><div class="chat-messages" style="height:300px;margin:16px 0">${d.mensagens.map(m=>`<div class="message"><strong>${m.autor}:</strong> ${m.texto}</div>`).join('')}</div><textarea id="novaMsg" rows="2" class="modern-input" placeholder="Sua resposta..."></textarea><button class="btn-modern" onclick="adicionarResposta(${id})">Responder</button></div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function adicionarResposta(id){
+    let msg=document.getElementById("novaMsg")?.value;
+    if(msg){ let d=debates.find(x=>x.id===id); d.mensagens.push({autor:currentUser.nome, texto:msg}); addNotificacaoDebate(`💬 Nova resposta de ${currentUser.nome} no debate "${d.titulo}"`); verDebate(id); }
+}
+function renderConsultorDashboard(){
+    let html=`<div class="grid-2"><div class="card-dash consultor-card"><h3>🏢 ${currentUser.nome}</h3><p>Especialidade: Jurídica</p><button class="btn-sm-modern" onclick="alert('Editar perfil')">Editar Perfil</button></div><div class="card-dash consultor-card"><h4>💰 Saldo: €1.250,75</h4></div></div>
+    <div class="top-buttons"><button class="top-btn" style="padding:14px 28px; font-size:1rem" onclick="renderConfigAgenda()">📅 Configurar Agenda</button><button class="top-btn" style="padding:14px 28px; font-size:1rem" onclick="renderConsultasAssociadas()">👀 Minhas Consultas</button><button class="top-btn" style="padding:14px 28px; font-size:1rem" onclick="renderRelatorioConsultor()">📊 Relatório</button></div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function renderConfigAgenda(){
+    let disp=JSON.parse(localStorage.getItem("agendaConsultor")||"[]");
+    let html=`<h3>Configurar Agenda Mensal</h3><div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px"><input type="date" id="dataDisp" class="modern-input consultor-input" style="width:160px; padding:14px"><input type="time" id="horaDisp" class="modern-input consultor-input" style="width:120px; padding:14px"><button class="btn-modern consultor-btn" style="width:auto; padding:14px 28px" onclick="adicionarDisponibilidade()">+ Adicionar</button></div><div id="dispList"><h4>Disponibilidades:</h4>${disp.map(d=>`<div class="card-dash consultor-card">📅 ${d.data} às ${d.hora}</div>`).join('')}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function adicionarDisponibilidade(){
+    let data=document.getElementById("dataDisp").value, hora=document.getElementById("horaDisp").value;
+    if(data&&hora){ let disp=JSON.parse(localStorage.getItem("agendaConsultor")||"[]"); disp.push({data,hora}); localStorage.setItem("agendaConsultor",JSON.stringify(disp)); agendaConsultores=disp; renderConfigAgenda(); addNotificacaoDebate("Disponibilidade adicionada à agenda"); }
+}
+function renderConsultasAssociadas(){
+    let minhas=consultas.filter(c=>c.prestadorAssociado===currentUser.username);
+    let html=`<h3>Consultas Associadas</h3><div class="responsive-table">${minhas.map(c=>`<div class="responsive-card consultor-card"><div class="row"><span class="label">Cliente:</span><span class="value">${c.cliente}</span></div><div class="row"><span class="label">Data/Hora:</span><span class="value">${c.data} ${c.hora}</span></div><div class="row"><span class="label">Assunto:</span><span class="value">${c.assunto}</span></div><div class="card-actions"><button class="btn-sm-modern consultor-btn" style="padding:10px 20px" onclick="confirmarConsultaConsultor(${c.id})">✅ Confirmar</button><button class="btn-sm-modern consultor-btn" style="padding:10px 20px" onclick="reagendarConsultaConsultor(${c.id})">🔄 Reagendar</button><button class="btn-sm-modern consultor-btn" style="padding:10px 20px; background:var(--danger);color:white" onclick="excluirConsultaConsultor(${c.id})">🗑 Excluir</button></div><div class="row"><span class="label">Cronómetro:</span><span class="value" id="crono_${c.id}">${c.cronometroAtivo?"Ativo":"-"}</span></div></div>`).join('')}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+    consultas.forEach(c=>{ if(c.cronometroAtivo && c.prestadorAssociado===currentUser.username) iniciarCronometroConsultor(c); });
+}
+function confirmarConsultaConsultor(id){
+    let c=consultas.find(x=>x.id===id);
+    if(c && !c.confirmada){
+        c.confirmada=true; c.status="confirmada"; c.cor="#10b981"; c.cronometroAtivo=true; c.dataConfirmacao=new Date();
+        addNotificacaoAgendamento(`🟢 Consulta confirmada com ${c.cliente} para ${c.data} ${c.hora}`, "utente");
+        addNotificacaoDebate(`✅ Consulta confirmada: ${c.cliente}`);
+        iniciarCronometroConsultor(c);
+        renderConsultasAssociadas();
+    }
+}
+function iniciarCronometroConsultor(consulta){
+    let target=new Date(`${consulta.data}T${consulta.hora}:00`);
+    if(consulta.intervaloId) clearInterval(consulta.intervaloId);
+    consulta.intervaloId=setInterval(()=>{
+        let diff=target-new Date();
+        if(diff<=0){ clearInterval(consulta.intervaloId); let el=document.getElementById(`crono_${consulta.id}`); if(el) el.innerText="Hora da consulta!"; if(consulta.tipoConsulta==="online") addNotificacaoDebate(`📹 Consulta online com ${consulta.cliente} - Iniciar chamada!`); return; }
+        let h=Math.floor(diff/(1000*60*60)), m=Math.floor((diff%(1000*60*60))/(1000*60)), s=Math.floor((diff%(1000*60))/1000);
+        let el=document.getElementById(`crono_${consulta.id}`);
+        if(el) el.innerText=`${h}h ${m}m ${s}s`;
+    },1000);
+}
+function reagendarConsultaConsultor(id){
+    let c=consultas.find(x=>x.id===id);
+    if(c.reagendamentos>=2){ alert("Limite de 2 reagendamentos por mês atingido"); return; }
+    let motivo=prompt("Motivo do reagendamento:");
+    if(!motivo) return;
+    let novaData=prompt("Nova data (YYYY-MM-DD):"), novaHora=prompt("Nova hora (HH:MM):");
+    if(novaData&&novaHora){ c.data=novaData; c.hora=novaHora; c.reagendamentos++; c.cor="#f59e0b"; c.status="reagendado"; addNotificacaoAgendamento(`🟡 Consulta reagendada para ${novaData} ${novaHora}`, "utente"); renderConsultasAssociadas(); }
+}
+function excluirConsultaConsultor(id){
+    let c=consultas.find(x=>x.id===id);
+    if(c.exclusoesMes>=1){ alert("Limite de 1 exclusão por mês. Se repetir 3 meses consecutivos será banido."); return; }
+    if(confirm("Excluir consulta?")){ c.exclusoesMes++; consultas=consultas.filter(x=>x.id!==id); addNotificacaoAgendamento(`🔴 Consulta com ${c.cliente} foi cancelada`, "utente"); renderConsultasAssociadas(); }
+    if(c.exclusoesMes>=3){ alert("⚠️ Você foi banido da plataforma por excesso de exclusões!"); usersDB=usersDB.filter(u=>u.username!==currentUser.username); logout(); }
+}
+function renderRelatorioConsultor(){ let minhas=consultas.filter(c=>c.prestadorAssociado===currentUser.username && c.confirmada); document.getElementById("dynamicArea").innerHTML=`<div class="card-dash consultor-card"><h3>📊 Relatório</h3><p>Consultas realizadas: ${minhas.length}</p><p>Faturamento: €${minhas.length*50}</p></div>`; }
+function renderUniversidadeDashboard(){
+    let html=`<div class="grid-2"><div class="card-dash"><h3>🏛️ ${currentUser.nome}</h3><p>Universidade parceira</p><button class="btn-sm-modern" onclick="alert('Editar perfil institucional')">Editar Perfil</button></div><div class="card-dash"><h4>📊 Estatísticas</h4><p>Visualizações: 1.234 | Candidaturas: ${candidaturas.length}</p></div></div>
+    <div class="top-buttons"><button class="top-btn" onclick="renderUniCursos()">📚 Gerir Cursos</button><button class="top-btn" onclick="renderUniBolsas()">💰 Gerir Bolsas</button><button class="top-btn" onclick="renderUniEventos()">📅 Gerir Eventos</button><button class="top-btn" onclick="renderUniPublicacoes()">📢 Publicar Conteúdo</button><button class="top-btn" onclick="renderNotificacoesUni()">🔔 Notificações (${candidaturas.length + inscricoes.length})</button></div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function renderNotificacoesUni(){
+    let html=`<h3>🔔 Notificações de Agendamento</h3><div class="responsive-table">${candidaturas.map(c=>`<div class="responsive-card"><div class="row"><span class="label">📋 Nova Candidatura</span><span class="value">${c}</span></div></div>`).join('')}${inscricoes.map(i=>`<div class="responsive-card"><div class="row"><span class="label">📝 Nova Inscrição</span><span class="value">${i}</span></div></div>`).join('')}</div><button class="btn-modern" onclick="renderUniversidadeDashboard()">Voltar</button>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function renderUniCursos(){ let uni=universidades.find(u=>u.nome===currentUser.nome)||universidades[0]; let html=`<h3>Meus Cursos</h3><div class="responsive-table">${uni.cursos.map(c=>`<div class="responsive-card"><div class="row"><span class="label">${c.titulo}</span><span class="value">€${c.propina}/ano</span></div><div class="card-actions"><button class="btn-sm-modern" onclick="alert('Editar curso')">✏️</button><button class="btn-sm-modern" style="background:var(--danger);color:white" onclick="alert('Curso removido')">🗑</button></div></div>`).join('')}</div><button class="btn-modern" onclick="alert('Formulário novo curso')">+ Novo Curso</button>`; document.getElementById("dynamicArea").innerHTML=html; }
+function renderUniBolsas(){ let uni=universidades.find(u=>u.nome===currentUser.nome)||universidades[0]; let html=`<h3>Bolsas</h3><div class="responsive-table">${uni.bolsas.map(b=>`<div class="responsive-card"><div class="row"><span class="label">${b.titulo}</span><span class="value">€${b.valor}</span></div></div>`).join('')}</div><button class="btn-modern" onclick="alert('Nova bolsa')">+ Nova Bolsa</button>`; document.getElementById("dynamicArea").innerHTML=html; }
+function renderUniEventos(){ let uni=universidades.find(u=>u.nome===currentUser.nome)||universidades[0]; let html=`<h3>Eventos</h3><div class="responsive-table">${uni.eventos.map(e=>`<div class="responsive-card"><div class="row"><span class="label">${e.titulo}</span><span class="value">${e.data} | ${e.local}</span></div></div>`).join('')}</div><button class="btn-modern" onclick="alert('Novo evento')">+ Criar Evento</button>`; document.getElementById("dynamicArea").innerHTML=html; }
+function renderUniPublicacoes(){
+    let html=`<h3>Publicar Conteúdo</h3><textarea id="pubConteudo" rows="3" class="modern-textarea" placeholder="Anuncie cursos, bolsas, eventos..."></textarea><button class="btn-modern" onclick="publicarNaRedeSocial()">Publicar na Comunidade</button><div class="card-dash" style="margin-top:16px"><h4>Últimas publicações</h4>${feedPosts.filter(p=>p.autor===currentUser.nome).map(p=>`<p>📢 ${p.conteudo.substring(0,100)}...</p>`).join('')||"<p>Nenhuma publicação</p>"}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function publicarNaRedeSocial(){ let c=document.getElementById("pubConteudo")?.value; if(c){ feedPosts.unshift({ id:Date.now(), autor:currentUser.nome, autorRole:"universidade", conteudo:c, data:new Date(), likes:0, comentarios:[] }); addNotificacaoDebate(`📢 Nova publicação da ${currentUser.nome}`); alert("Publicado!"); renderUniPublicacoes(); } }
+function renderAdminDashboard(){
+    let html=`<div><h2>Painel Administrador</h2><div class="grid-2">
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderGerirUtilizadores()"><h4>👥 Gerir Utilizadores</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderValidarRegistos()"><h4>✅ Validar Registos (${pedidosRegisto.length})</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderAprovarUniversidades()"><h4>🏛️ Aprovar Universidades</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderGerirGuias()"><h4>📖 Gerir Guias</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderModerarRedeSocial()"><h4>🛡️ Moderar Rede Social</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderRelatorioFinanceiro()"><h4>📊 Relatório Financeiro</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderLogs()"><h4>📜 Logs de Acesso</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderConfigurarComissoes()"><h4>⚙️ Configurar Comissões</h4></div>
+    <div class="card-dash admin-card" style="padding:28px; cursor:pointer" onclick="renderConsultasAdmin()"><h4>📅 Gestão de Consultas (${consultas.filter(c=>!c.prestadorAssociado).length})</h4></div>
+    </div></div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function renderGerirUtilizadores(){
+    let html=`<h3>Utilizadores</h3><div class="responsive-table">${usersDB.map(u=>`<div class="responsive-card admin-card"><div class="row"><span class="label">${u.nome}</span><span class="value">${u.role}</span></div><div class="card-actions"><button class="btn-sm-modern admin-btn" style="padding:10px 20px" onclick="alert('Editar ${u.nome}')">✏️</button><button class="btn-sm-modern admin-btn" style="padding:10px 20px; background:var(--danger);color:white" onclick="alert('Remover ${u.nome}')">🗑</button></div></div>`).join('')}</div><button class="btn-modern admin-btn" style="padding:14px 28px" onclick="alert('Criar novo perfil')">+ Criar Perfil</button>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function renderValidarRegistos(){
+    if(pedidosRegisto.length===0){ document.getElementById("dynamicArea").innerHTML="<div class='card-dash admin-card'><p>Sem pedidos pendentes</p></div>"; return; }
+    let html=`<h3>✅ Pedidos de Registo</h3><div class="responsive-table">${pedidosRegisto.map(p=>`<div class="responsive-card admin-card"><div class="row"><span class="label">${p.nome}</span><span class="value">${p.email} | ${p.tipo}</span></div><div class="card-actions"><button class="btn-sm-modern admin-btn" style="padding:10px 20px" onclick="validarRegisto(${p.id})">✅ Validar</button><button class="btn-sm-modern admin-btn" style="padding:10px 20px; background:var(--danger);color:white" onclick="invalidarRegisto(${p.id})">❌ Invalidar</button></div></div>`).join('')}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function validarRegisto(id){ let p=pedidosRegisto.find(x=>x.id===id); if(p){ usersDB.push({ id:usersDB.length+10, username:p.email.split('@')[0], password:"123", role:p.tipo, nome:p.nome, status:"aprovado" }); pedidosRegisto=pedidosRegisto.filter(x=>x.id!==id); addNotificacaoAgendamento(`✅ Utilizador ${p.nome} validado!`, "admin"); renderValidarRegistos(); } }
+function invalidarRegisto(id){ pedidosRegisto=pedidosRegisto.filter(x=>x.id!==id); renderValidarRegistos(); }
+function renderAprovarUniversidades(){ document.getElementById("dynamicArea").innerHTML="<div class='card-dash admin-card'><p>Nenhuma universidade pendente</p></div>"; }
+function renderGerirGuias(){ let html=`<h3>Guias Práticos</h3><div class="responsive-table">${guias.map(g=>`<div class="responsive-card admin-card"><div class="row"><span class="label">${g.titulo}</span><span class="value">${g.categoria}</span></div><div class="card-actions"><button class="btn-sm-modern admin-btn" onclick="alert('Editar guia')">✏️</button><button class="btn-sm-modern admin-btn" style="background:var(--danger);color:white" onclick="alert('Remover guia')">🗑</button></div></div>`).join('')}</div><button class="btn-modern admin-btn" style="padding:14px 28px" onclick="alert('Criar novo guia')">+ Novo Guia</button>`; document.getElementById("dynamicArea").innerHTML=html; }
+function renderModerarRedeSocial(){ document.getElementById("dynamicArea").innerHTML=`<div class="responsive-table">${feedPosts.map(p=>`<div class="responsive-card admin-card"><div class="row"><span class="label">${p.autor}</span><span class="value">${p.conteudo.substring(0,80)}</span></div><button class="btn-sm-modern admin-btn" style="background:var(--danger);color:white" onclick="alert('Publicação removida')">🗑 Remover</button></div>`).join('')}</div>`; }
+function renderRelatorioFinanceiro(){ document.getElementById("dynamicArea").innerHTML=`<div class="card-dash admin-card"><h3>Relatório Financeiro</h3><p>Total de comissões: €450,00</p><p>Consultas realizadas: 9</p><p>Receita total: €1.250,00</p><button class="btn-modern admin-btn" onclick="logout()">Sair</button></div>`; }
+function renderLogs(){ let html=`<h3>Logs de Acesso</h3><div class="responsive-table">${logsAcesso.map(l=>`<div class="responsive-card admin-card"><div class="row"><span class="label">${l.user}</span><span class="value">${l.role} | ${l.data}</span></div></div>`).join('')}</div>`; document.getElementById("dynamicArea").innerHTML=html; }
+function renderConfigurarComissoes(){ document.getElementById("dynamicArea").innerHTML=`<div class="card-dash admin-card"><h3>Comissões</h3><p>Percentagem atual: 10% sobre consultas</p><button class="btn-modern admin-btn" onclick="alert('Comissão alterada')">Alterar</button></div>`; }
+function renderConsultasAdmin(){
+    let pendentes = consultas.filter(c=>!c.prestadorAssociado);
+    if(pendentes.length===0){ document.getElementById("dynamicArea").innerHTML="<div class='card-dash admin-card'><p>Nenhuma consulta pendente</p></div>"; return; }
+    let html=`<h3>📋 Gestão de Consultas</h3><div class="responsive-table">${pendentes.map(c=>`<div class="responsive-card admin-card"><div class="row"><span class="label">Cliente:</span><span class="value">${c.cliente}</span></div><div class="row"><span class="label">Tipo:</span><span class="value">${c.tipo}</span></div><div class="row"><span class="label">Data pretendida:</span><span class="value">${c.data} ${c.hora}</span></div><div class="row"><span class="label">Consultores disponíveis:</span><span class="value">${agendaConsultores.filter(a=>a.data===c.data).length>0 ? agendaConsultores.filter(a=>a.data===c.data).map(a=>a.data).join(', ') : "Nenhum"}</span></div><div class="card-actions"><select id="prestadorSelect_${c.id}" class="modern-select admin-select" style="width:auto;display:inline-block; padding:12px"><option value="">Selecionar consultor</option><option value="Prestador">Dr. António Santos</option></select><button class="btn-sm-modern admin-btn" style="padding:10px 20px" onclick="associarConsulta(${c.id})">Associar</button></div></div>`).join('')}</div>`;
+    document.getElementById("dynamicArea").innerHTML=html;
+}
+function associarConsulta(id){ let select=document.getElementById(`prestadorSelect_${id}`); let consultor=select?.value; if(consultor){ let c=consultas.find(x=>x.id===id); if(c){ c.prestadorAssociado=consultor; c.status="associado"; c.cor="#f59e0b"; addNotificacaoAgendamento(`🟠 Consulta associada ao consultor ${consultor}`, "prestador"); addNotificacaoAgendamento(`🟠 Consulta associada ao consultor ${consultor}`, "utente"); renderConsultasAdmin(); } } }
+function addDebate(){ let titulo=document.getElementById("debateTitulo")?.value, categoria=document.getElementById("debateCategoria")?.value, desc=document.getElementById("debateDesc")?.value; if(titulo){ debates.push({ id:debates.length+1, titulo, categoria, autor:currentUser.nome, autorRole:currentUser.role, data:new Date(), mensagens:[{autor:currentUser.nome, texto:desc}] }); addNotificacaoDebate(`📢 Novo debate: ${titulo}`); closeModal('debateModal'); renderDebates(); } }
+document.getElementById("cancelDebateBtn")?.addEventListener("click",()=>closeModal('debateModal'));
+document.getElementById("createEventBtn")?.addEventListener("click",addDebate);
+document.getElementById("criarForumBtn").onclick=()=>{ if(currentUser.logged) openModal('debateModal'); else alert("Faça login primeiro"); };
+function renderizarPorPerfil(){
+    let top=document.getElementById("topButtonsArea"), service=document.getElementById("serviceButtonsArea");
+    renderNotificacoes();
+    if(currentUser.role==="utente"){
+        top.innerHTML=`<button class="top-btn" onclick="renderUniversidades()">🏛️ Universidades</button><button class="top-btn" onclick="renderComparador()">📊 Comparador</button><button class="top-btn" onclick="renderGuias()">📖 Guias</button><button class="top-btn" onclick="renderRedeSocial()">👥 Comunidade</button><button class="top-btn" onclick="renderMinhasCandidaturas()">📋 Candidaturas</button><button class="top-btn" onclick="renderBiblioteca()">📚 Biblioteca</button><button class="top-btn" onclick="renderMinhasConsultas()">📅 Consultas</button><button class="top-btn" onclick="renderSolicitarConsulta()">➕ Solicitar Consulta</button><button class="top-btn" onclick="renderFeedNoticias()">📰 Feed Notícias</button><button class="top-btn" onclick="logout()">Sair</button>`;
+        service.innerHTML=`<button class="service-btn" onclick="renderForumNetworking()"><i class="fas fa-comments"></i><span>Chat</span></button><button class="service-btn" onclick="renderDebates()"><i class="fas fa-users"></i><span>Fórum</span></button>`;
+        renderUniversidades();
+    } else if(currentUser.role==="consultor"){
+        top.innerHTML=`<button class="top-btn" onclick="renderConsultorDashboard()">🏠 Dashboard</button><button class="top-btn" onclick="logout()">Sair</button>`;
+        service.innerHTML=`<button class="service-btn" onclick="renderForumNetworking()"><i class="fas fa-comments"></i><span>Chat</span></button><button class="service-btn" onclick="renderDebates()"><i class="fas fa-users"></i><span>Fórum</span></button>`;
+        renderConsultorDashboard();
+    } else if(currentUser.role==="universidade"){
+        top.innerHTML=`<button class="top-btn" onclick="renderUniversidadeDashboard()">🏠 Dashboard</button><button class="top-btn" onclick="logout()">Sair</button>`;
+        service.innerHTML=`<button class="service-btn" onclick="renderForumNetworking()"><i class="fas fa-comments"></i><span>Chat</span></button><button class="service-btn" onclick="renderDebates()"><i class="fas fa-users"></i><span>Fórum</span></button><button class="service-btn" onclick="renderRedeSocial()"><i class="fas fa-newspaper"></i><span>Feed</span></button>`;
+        renderUniversidadeDashboard();
+    } else {
+        top.innerHTML=`<button class="top-btn" onclick="renderAdminDashboard()">🏠 Admin</button><button class="top-btn" onclick="logout()">Sair</button>`;
+        service.innerHTML=`<button class="service-btn" onclick="renderForumNetworking()"><i class="fas fa-comments"></i><span>Chat</span></button><button class="service-btn" onclick="renderDebates()"><i class="fas fa-users"></i><span>Fórum</span></button>`;
+        renderAdminDashboard();
+    }
+    document.getElementById("userList").innerHTML=`<div class="user-item"><div class="user-avatar">UC</div><div class="user-name">Univ Coimbra</div><span class="status-dot"></span></div><div class="user-item"><div class="user-avatar">UP</div><div class="user-name">Univ Porto</div><span class="status-dot"></span></div><div class="user-item"><div class="user-avatar">AS</div><div class="user-name">Dr. António</div><span class="status-dot"></span></div>`;
+}
+pedidosRegisto.push({ id:888, nome:"Nova Universidade", email:"contato@novauniversidade.pt", tipo:"universidade", data:new Date() });
+</script>
+</body>
+</html>
